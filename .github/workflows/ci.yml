@@ -131,8 +131,7 @@ jobs:
       - name: "[Setup] Checkout bookverse-infra for shared scripts"
         uses: actions/checkout@v4
         with:
-          repository: 'tomjfrog/bookverse-infra'
-          ref: 'main'
+          repository: tomjfrog/bookverse-infra
           path: bookverse-infra
 
       # 🧠 Analysis: Payment-optimized commit analysis for deployment decisions
@@ -195,8 +194,7 @@ jobs:
       - name: "[Setup] Checkout bookverse-infra for shared scripts"
         uses: actions/checkout@v4
         with:
-          repository: 'tomjfrog/bookverse-infra'
-          ref: 'main'
+          repository: tomjfrog/bookverse-infra
           path: bookverse-infra
 
 
@@ -312,7 +310,7 @@ jobs:
           fi
           
           REGISTRY_URL="${{ vars.DOCKER_REGISTRY }}"
-          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-nonprod-local"
+          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-dev-local"
           IMAGE_NAME="$REGISTRY_URL/$REPO_KEY/$SERVICE_NAME:$IMAGE_TAG"
           
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
@@ -473,7 +471,7 @@ jobs:
           SERVER_ID="${SETUP_JFROG_CLI_SERVER_IDS:-setup-jfrog-cli-server}"
           jf c use "$SERVER_ID" || true
 
-          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-nonprod-local"
+          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-dev-local"
           IMAGE_NAME="${{ vars.DOCKER_REGISTRY }}/$REPO_KEY/$SERVICE_NAME:$IMAGE_TAG"
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "Using precomputed image tag: $IMAGE_TAG"
@@ -503,6 +501,7 @@ jobs:
         env:
           EVIDENCE_PRIVATE_KEY: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
           EVIDENCE_KEY_ALIAS: ${{ vars.EVIDENCE_KEY_ALIAS }}
+          PACKAGE_REPO_STAGE_SUFFIX: dev
         run: |
           echo "📊 Generating evidence for API image package"
           
@@ -529,7 +528,7 @@ jobs:
           tar -czf "checkout-config-$IMAGE_TAG.tar.gz" openapi.json
           cd ../..
           
-          GENERIC_REPO="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-generic-nonprod-local"
+          GENERIC_REPO="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-generic-dev-local"
           jf rt upload "dist/openapi/checkout-config-$IMAGE_TAG.tar.gz" "$GENERIC_REPO/$SERVICE_NAME/config/$IMAGE_TAG/checkout-config-$IMAGE_TAG.tar.gz" \
             --build-name "$BUILD_NAME" --build-number "$BUILD_NUMBER" --project "${{ vars.PROJECT_KEY }}"
           echo "✅ OpenAPI config package uploaded with version $IMAGE_TAG"
@@ -538,6 +537,7 @@ jobs:
         env:
           EVIDENCE_PRIVATE_KEY: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
           EVIDENCE_KEY_ALIAS: ${{ vars.EVIDENCE_KEY_ALIAS }}
+          PACKAGE_REPO_STAGE_SUFFIX: dev
         run: |
           echo "📦 Generating evidence for OpenAPI package"
           
@@ -560,7 +560,7 @@ jobs:
           tar -czf "checkout-resources-$IMAGE_TAG.tar.gz" order.created.schema.json
           cd ../..
           
-          GENERIC_REPO="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-generic-nonprod-local"
+          GENERIC_REPO="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-generic-dev-local"
           jf rt upload "dist/contracts/checkout-resources-$IMAGE_TAG.tar.gz" "$GENERIC_REPO/$SERVICE_NAME/resources/$IMAGE_TAG/checkout-resources-$IMAGE_TAG.tar.gz" \
             --build-name "$BUILD_NAME" --build-number "$BUILD_NUMBER" --project "${{ vars.PROJECT_KEY }}"
           echo "✅ Contract resources package uploaded with version $IMAGE_TAG"
@@ -569,6 +569,7 @@ jobs:
         env:
           EVIDENCE_PRIVATE_KEY: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
           EVIDENCE_KEY_ALIAS: ${{ vars.EVIDENCE_KEY_ALIAS }}
+          PACKAGE_REPO_STAGE_SUFFIX: dev
         run: |
           echo "📦 Generating evidence for contract package"
           
@@ -595,7 +596,7 @@ jobs:
           echo "✅ Using unified IMAGE_TAG for worker: $WORKER_TAG"
           echo "WORKER_TAG=$WORKER_TAG" >> $GITHUB_ENV
           
-          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-nonprod-local"
+          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-dev-local"
           WORKER_IMAGE="${{ vars.DOCKER_REGISTRY }}/$REPO_KEY/$WORKER_NAME:$WORKER_TAG"
           echo "WORKER_IMAGE=$WORKER_IMAGE" >> $GITHUB_ENV
           
@@ -623,6 +624,7 @@ jobs:
         env:
           EVIDENCE_PRIVATE_KEY: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
           EVIDENCE_KEY_ALIAS: ${{ vars.EVIDENCE_KEY_ALIAS }}
+          PACKAGE_REPO_STAGE_SUFFIX: dev
         run: |
           echo "📊 Generating evidence for Worker image package"
           
@@ -649,7 +651,7 @@ jobs:
           echo "✅ Using unified IMAGE_TAG for migrations: $MIGR_TAG"
           echo "MIGR_TAG=$MIGR_TAG" >> $GITHUB_ENV
           
-          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-nonprod-local"
+          REPO_KEY="${{ vars.PROJECT_KEY }}-$SERVICE_NAME-internal-docker-dev-local"
           REGISTRY_URL="${{ vars.DOCKER_REGISTRY }}"
           MIGRATIONS_IMAGE="$REGISTRY_URL/$REPO_KEY/$MIGR_NAME:$MIGR_TAG"
           echo "MIGRATIONS_IMAGE=$MIGRATIONS_IMAGE" >> $GITHUB_ENV
@@ -678,6 +680,7 @@ jobs:
         env:
           EVIDENCE_PRIVATE_KEY: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
           EVIDENCE_KEY_ALIAS: ${{ vars.EVIDENCE_KEY_ALIAS }}
+          PACKAGE_REPO_STAGE_SUFFIX: dev
         run: |
           echo "📊 Generating evidence for Migrations image package"
           
